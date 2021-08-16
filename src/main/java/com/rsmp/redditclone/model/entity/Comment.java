@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-
 import java.time.Instant;
 
 import static javax.persistence.FetchType.LAZY;
