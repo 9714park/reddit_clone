@@ -1,5 +1,6 @@
 package com.rsmp.redditclone.service;
 
+import com.rsmp.redditclone.exception.SpringRedditException;
 import com.rsmp.redditclone.model.NotificationEmail;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class MailService {
             log.debug("Sending email to {}", notificationEmail.getRecipient());
             mailSender.send(messagePreparator);
         } catch (MailException e){
-            log.error("Failed to send email to {}", notificationEmail.getRecipient());
+            throw new SpringRedditException("Exception occurred whe nsending mail to " + notificationEmail.getRecipient(), e);
         }
 
 
