@@ -28,7 +28,7 @@ public class AuthService {
 
     @Transactional
     public void signup(RegisterRequest registerRequest) {
-        log.debug("Signing up user {}", registerRequest.getUsername());
+        log.info("Signing up user {}", registerRequest.getUsername());
 
         // Create new user
         User user = User.builder().username(registerRequest.getUsername())
@@ -43,7 +43,7 @@ public class AuthService {
             // Save user to DB
             User save = userRepository.save(user);
         } catch (Exception e) {
-            log.error("Registering user {} to DB failed", user.getUsername());
+            throw new SpringRedditException("Failed to register user " +user.getUsername() + " to DB");
         }
 
         // Create verification token
@@ -57,7 +57,7 @@ public class AuthService {
     }
 
     private String generateVerificationToken(User user) {
-        log.debug("Creating token for user {}", user.getUsername());
+        log.info("Creating token for user {}", user.getUsername());
         String tokenStr = UUID.randomUUID().toString();
 
         VerificationToken verificationToken = new VerificationToken();
@@ -65,11 +65,31 @@ public class AuthService {
         verificationToken.setUser(user);
 
         try {
-        verificationTokenRepository.save(verificationToken);
+            verificationTokenRepository.save(verificationToken);
         } catch (Exception e) {
-           throw new SpringRedditException("Registering verification token for {} to DB failed" + user.getUsername(), e);
+            throw new SpringRedditException("Registering verification token for {} to DB failed" + user.getUsername(), e);
         }
 
         return tokenStr;
+    }
+
+    public void verifyAccount(String token) {
+        log.info("Verifying account with token {}", token);
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
+                .orElseThrow(() -> new SpringRedditException("Invalid token"));
+
+        activateUser(verificationToken);
+    }
+
+    @Transactional
+    public void activateUser(VerificationToken verificationToken) {
+        String username = verificationToken.getUser().getUsername();
+        log.info("Activating account {}", username );
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new SpringRedditException("User not found with name " + username));
+
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 }
