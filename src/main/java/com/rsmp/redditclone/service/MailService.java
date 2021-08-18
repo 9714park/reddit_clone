@@ -25,10 +25,7 @@ public class MailService {
             messageHelper.setTo(notificationEmail.getRecipient());
             messageHelper.setSubject(notificationEmail.getSubject());
             messageHelper.setText(mailBuilder.build(notificationEmail.getBody()));
-
-
         };
-
 
         try{
             log.debug("Sending email to {}", notificationEmail.getRecipient());
@@ -36,7 +33,5 @@ public class MailService {
         } catch (MailException e){
             throw new SpringRedditException("Exception occurred whe nsending mail to " + notificationEmail.getRecipient(), e);
         }
-
-
     }
 }
