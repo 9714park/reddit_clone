@@ -1,9 +1,9 @@
-package com.rsmp.redditclone.controller;
+package com.rsmp.redditclone.auth.controller;
 
-import com.rsmp.redditclone.model.dto.AuthenticationToken;
-import com.rsmp.redditclone.model.dto.LoginRequest;
-import com.rsmp.redditclone.model.dto.RegisterRequest;
-import com.rsmp.redditclone.security.AuthService;
+import com.rsmp.redditclone.auth.model.dto.AuthenticationToken;
+import com.rsmp.redditclone.auth.model.dto.LoginRequest;
+import com.rsmp.redditclone.auth.model.dto.RegisterRequest;
+import com.rsmp.redditclone.auth.service.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.rsmp.redditclone.model.dto;
+package com.rsmp.redditclone.auth.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

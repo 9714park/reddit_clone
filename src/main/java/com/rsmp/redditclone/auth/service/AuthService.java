@@ -1,14 +1,14 @@
-package com.rsmp.redditclone.security;
+package com.rsmp.redditclone.auth.service;
 
 import com.rsmp.redditclone.exception.SpringRedditException;
 import com.rsmp.redditclone.model.NotificationEmail;
-import com.rsmp.redditclone.model.dto.AuthenticationToken;
-import com.rsmp.redditclone.model.dto.LoginRequest;
-import com.rsmp.redditclone.model.dto.RegisterRequest;
+import com.rsmp.redditclone.auth.model.dto.AuthenticationToken;
+import com.rsmp.redditclone.auth.model.dto.LoginRequest;
+import com.rsmp.redditclone.auth.model.dto.RegisterRequest;
 import com.rsmp.redditclone.model.entity.User;
-import com.rsmp.redditclone.model.entity.VerificationToken;
+import com.rsmp.redditclone.auth.model.entity.VerificationToken;
 import com.rsmp.redditclone.repository.UserRepository;
-import com.rsmp.redditclone.repository.VerificationTokenRepository;
+import com.rsmp.redditclone.auth.repository.VerificationTokenRepository;
 import com.rsmp.redditclone.service.MailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +35,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
 
+    // Sign up new user and send activation email
     @Transactional
     public void signup(RegisterRequest registerRequest) {
         log.info("Signing up user {}", registerRequest.getUsername());
@@ -67,6 +68,7 @@ public class AuthService {
                 "http://localhost:8080/api/auth/accountVerification/" + token));
     }
 
+    // Create verification token to for account activation
     private String generateVerificationToken(User user) {
         log.info("Creating token for user {}", user.getUsername());
         String tokenStr = UUID.randomUUID()
@@ -86,6 +88,7 @@ public class AuthService {
         return tokenStr;
     }
 
+    // Verify account via token
     public void verifyAccount(String token) {
         log.info("Verifying account with token {}", token);
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
@@ -94,6 +97,8 @@ public class AuthService {
         activateUser(verificationToken);
     }
 
+
+    // Activate user
     @Transactional
     public void activateUser(VerificationToken verificationToken) {
         String username = verificationToken.getUser().getUsername();
@@ -106,7 +111,9 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    // Authenticate user and provide JWT token
     public AuthenticationToken login(LoginRequest loginRequest) {
+        log.info("Authenticating account {}", loginRequest.getUsername());
         Authentication authenticate = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest
                         .getUsername(), loginRequest.getPassword()));

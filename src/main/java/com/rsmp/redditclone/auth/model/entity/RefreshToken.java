@@ -1,4 +1,4 @@
-package com.rsmp.redditclone.model.entity;
+package com.rsmp.redditclone.auth.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

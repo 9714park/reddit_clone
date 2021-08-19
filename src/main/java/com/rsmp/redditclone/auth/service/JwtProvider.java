@@ -1,4 +1,4 @@
-package com.rsmp.redditclone.security;
+package com.rsmp.redditclone.auth.service;
 
 import com.rsmp.redditclone.exception.SpringRedditException;
 import io.jsonwebtoken.Jwts;
@@ -28,7 +28,7 @@ public class JwtProvider {
         }
     }
 
-
+    // Generate JWT token for authenticated users
     public String generateToken(Authentication authentication) {
         User principal = (User) authentication.getPrincipal();
         return Jwts.builder()
@@ -37,11 +37,12 @@ public class JwtProvider {
                 .compact();
     }
 
+    // Get private key from keystore
     private PrivateKey getPrivateKey() {
         try {
             return (PrivateKey) keyStore.getKey("redditclone", "secret".toCharArray());
         } catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
-            throw new SpringRedditException("Failed to retrieve key from keystore");
+            throw new SpringRedditException("Failed to retrieve private key from keystore");
         }
     }
 }

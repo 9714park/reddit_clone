@@ -1,6 +1,6 @@
-package com.rsmp.redditclone.repository;
+package com.rsmp.redditclone.auth.repository;
 
-import com.rsmp.redditclone.model.entity.RefreshToken;
+import com.rsmp.redditclone.auth.model.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
