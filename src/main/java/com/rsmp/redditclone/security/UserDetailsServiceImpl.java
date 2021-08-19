@@ -1,4 +1,4 @@
-package com.rsmp.redditclone.service;
+package com.rsmp.redditclone.security;
 
 import com.rsmp.redditclone.exception.SpringRedditException;
 import com.rsmp.redditclone.model.entity.User;

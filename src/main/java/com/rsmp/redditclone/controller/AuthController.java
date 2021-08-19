@@ -1,8 +1,9 @@
 package com.rsmp.redditclone.controller;
 
+import com.rsmp.redditclone.model.dto.AuthenticationToken;
 import com.rsmp.redditclone.model.dto.LoginRequest;
 import com.rsmp.redditclone.model.dto.RegisterRequest;
-import com.rsmp.redditclone.service.AuthService;
+import com.rsmp.redditclone.security.AuthService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest) {
-        authService.login(loginRequest);
+    public AuthenticationToken login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
 
     }
 
