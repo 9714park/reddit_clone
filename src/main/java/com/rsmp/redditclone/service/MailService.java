@@ -32,7 +32,8 @@ public class MailService {
             log.debug("Sending email to {}", notificationEmail.getRecipient());
             mailSender.send(messagePreparator);
         } catch (MailException e) {
-            throw new SpringRedditException("Exception occurred whe nsending mail to " + notificationEmail.getRecipient(), e);
+            throw new SpringRedditException("Exception occurred whe nsending mail to " + notificationEmail
+                    .getRecipient(), e);
         }
     }
 }

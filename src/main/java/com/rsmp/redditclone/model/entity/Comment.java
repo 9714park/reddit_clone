@@ -20,7 +20,7 @@ public class Comment {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @NotEmpty (message ="Comment text cannot be empty")
+    @NotEmpty(message = "Comment text cannot be empty")
     private String text;
 
     @ManyToOne(fetch = LAZY)
