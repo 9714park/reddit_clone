@@ -33,4 +33,12 @@ public class SubredditController {
                 .body(subredditService.getAll());
 
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SubredditDto> getSubreddit(@PathVariable Long id) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(subredditService.getSubreddit(id));
+
+    }
 }

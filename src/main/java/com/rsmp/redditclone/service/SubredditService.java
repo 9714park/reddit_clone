@@ -1,6 +1,8 @@
 package com.rsmp.redditclone.service;
 
 
+import com.rsmp.redditclone.exception.SpringRedditException;
+import com.rsmp.redditclone.mapper.SubredditMapper;
 import com.rsmp.redditclone.model.dto.SubredditDto;
 import com.rsmp.redditclone.model.entity.Subreddit;
 import com.rsmp.redditclone.repository.SubredditRepository;
@@ -18,10 +20,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SubredditService {
     private final SubredditRepository subredditRepository;
+    private final SubredditMapper subredditMapper;
 
     @Transactional
     public SubredditDto save(SubredditDto subredditDto) {
-        Subreddit subreddit = mapSubredditDto(subredditDto);
+        Subreddit subreddit = subredditMapper.mapDtoToSubreddit(subredditDto);
 
         Subreddit save = subredditRepository.save(subreddit);
         subredditDto.setId(save.getId());
@@ -33,19 +36,15 @@ public class SubredditService {
     public List<SubredditDto> getAll() {
         return subredditRepository.findAll()
                 .stream()
-                .map(this::mapToSubRedditDto)
+                .map(subredditMapper::mapSubredditToDto)
                 .collect(Collectors.toList());
     }
 
-    private Subreddit mapSubredditDto(SubredditDto subredditDto) {
-        return Subreddit.builder().name(subredditDto.getName())
-                .description(subredditDto.getDescription()).build();
-    }
+    public SubredditDto getSubreddit(Long id) {
+        Subreddit subreddit = subredditRepository.findById(id)
+                .orElseThrow(() -> new SpringRedditException(
+                        "Failed to find subreddit with id " + id));
 
-    private SubredditDto mapToSubRedditDto(Subreddit subreddit) {
-        return SubredditDto.builder().name(subreddit.getName())
-                .description(subreddit.getDescription())
-                .numberOfPosts(subreddit.getPosts().size())
-                .build();
+        return subredditMapper.mapSubredditToDto(subreddit);
     }
 }
