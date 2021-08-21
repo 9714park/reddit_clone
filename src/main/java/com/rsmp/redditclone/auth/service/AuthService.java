@@ -1,14 +1,14 @@
 package com.rsmp.redditclone.auth.service;
 
-import com.rsmp.redditclone.exception.SpringRedditException;
-import com.rsmp.redditclone.model.NotificationEmail;
 import com.rsmp.redditclone.auth.model.dto.AuthenticationToken;
 import com.rsmp.redditclone.auth.model.dto.LoginRequest;
 import com.rsmp.redditclone.auth.model.dto.RegisterRequest;
-import com.rsmp.redditclone.model.entity.User;
 import com.rsmp.redditclone.auth.model.entity.VerificationToken;
-import com.rsmp.redditclone.repository.UserRepository;
 import com.rsmp.redditclone.auth.repository.VerificationTokenRepository;
+import com.rsmp.redditclone.exception.SpringRedditException;
+import com.rsmp.redditclone.model.NotificationEmail;
+import com.rsmp.redditclone.model.entity.User;
+import com.rsmp.redditclone.repository.UserRepository;
 import com.rsmp.redditclone.service.MailService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -122,5 +122,14 @@ public class AuthService {
         String token = jwtProvider.generateToken(authenticate);
 
         return new AuthenticationToken(token, loginRequest.getUsername());
+    }
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        return userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new SpringRedditException("Failed to find user " + principal
+                        .getUsername()));
     }
 }
