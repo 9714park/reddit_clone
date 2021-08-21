@@ -32,43 +32,59 @@ public class PostService {
     private final PostMapper postMapper;
 
 
+
+    // Add new post
     @Transactional
     public void save(PostRequest postRequest) {
+        log.info("Saving post {}", postRequest.getPostName());
+
         Subreddit subreddit = subredditRepository.findByName(postRequest.getSubredditName())
                 .orElseThrow(() -> new SpringRedditException("Failed to find subreddit "
                         + postRequest.getSubredditName()));
+
         postRepository.save(postMapper
                 .mapPostRequestToPost(postRequest, subreddit, authService.getCurrentUser()));
     }
 
+    // Get all posts
     @Transactional(readOnly = true)
     public List<PostResponse> getAllPosts() {
+        log.info("Retrieving all posts");
+
         return postRepository.findAll()
                 .stream()
                 .map(postMapper::mapPostToPostResponse)
                 .collect(toList());
     }
 
+    // Get post by id
     @Transactional(readOnly = true)
     public PostResponse getPost(Long id) {
+        log.info("Retrieving post with id {}", id);
+
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new SpringRedditException("Failed to find post with id "
-                        + id.toString()));
+                .orElseThrow(() -> new SpringRedditException("Failed to find post with id " + id));
+
         return postMapper.mapPostToPostResponse(post);
     }
 
+    // Get post by subreddit
     @Transactional(readOnly = true)
     public List<PostResponse> getPostsBySubreddit(Long subredditId) {
+        log.info("Retrieving all posts with subreddit id {}", subredditId);
+
         Subreddit subreddit = subredditRepository.findById(subredditId)
-                .orElseThrow(() -> new SpringRedditException("Failed to find subreddit with id "
-                        + subredditId.toString()));
+                .orElseThrow(() -> new SpringRedditException("Failed to find subreddit with id " + subredditId));
 
         List<Post> posts = postRepository.findAllBySubreddit(subreddit);
         return posts.stream().map(postMapper::mapPostToPostResponse).collect(toList());
     }
 
+    // Get post by username
     @Transactional(readOnly = true)
     public List<PostResponse> getPostsByUsername(String username) {
+        log.info("Retrieving all posts created by user {}", username);
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new SpringRedditException(username));
 

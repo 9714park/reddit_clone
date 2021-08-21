@@ -22,8 +22,11 @@ public class SubredditService {
     private final SubredditRepository subredditRepository;
     private final SubredditMapper subredditMapper;
 
+    // Add new subreddit
     @Transactional
     public SubredditDto save(SubredditDto subredditDto) {
+        log.info("Saving subreddit {}", subredditDto.getName()
+        );
         Subreddit subreddit = subredditMapper.mapDtoToSubreddit(subredditDto);
 
         Subreddit save = subredditRepository.save(subreddit);
@@ -31,16 +34,20 @@ public class SubredditService {
         return subredditDto;
     }
 
-
+    // Get all subreddits
     @Transactional(readOnly = true)
     public List<SubredditDto> getAll() {
+        log.info("Retrieving all subreddits");
+
         return subredditRepository.findAll()
                 .stream()
                 .map(subredditMapper::mapSubredditToDto)
                 .collect(Collectors.toList());
     }
 
+    // Get subreddit by id
     public SubredditDto getSubreddit(Long id) {
+        log.info("Retrieving subreddit by id {}", id);
         Subreddit subreddit = subredditRepository.findById(id)
                 .orElseThrow(() -> new SpringRedditException(
                         "Failed to find subreddit with id " + id));
