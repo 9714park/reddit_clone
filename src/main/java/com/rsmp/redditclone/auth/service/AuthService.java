@@ -1,7 +1,8 @@
 package com.rsmp.redditclone.auth.service;
 
-import com.rsmp.redditclone.auth.model.dto.AuthenticationToken;
+import com.rsmp.redditclone.auth.model.dto.AuthenticationResponse;
 import com.rsmp.redditclone.auth.model.dto.LoginRequest;
+import com.rsmp.redditclone.auth.model.dto.RefreshTokenRequest;
 import com.rsmp.redditclone.auth.model.dto.RegisterRequest;
 import com.rsmp.redditclone.auth.model.entity.VerificationToken;
 import com.rsmp.redditclone.auth.repository.VerificationTokenRepository;
@@ -29,11 +30,13 @@ import java.util.UUID;
 public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
-    private final VerificationTokenRepository verificationTokenRepository;
-    private final MailService mailService;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
+    private final MailService mailService;
+
+    private final UserRepository userRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
 
     // Sign up new user and send activation email
     @Transactional
@@ -112,7 +115,7 @@ public class AuthService {
     }
 
     // Authenticate user and provide JWT token
-    public AuthenticationToken login(LoginRequest loginRequest) {
+    public AuthenticationResponse login(LoginRequest loginRequest) {
         log.info("Authenticating account {}", loginRequest.getUsername());
         Authentication authenticate = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest
@@ -121,7 +124,8 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String token = jwtProvider.generateToken(authenticate);
 
-        return AuthenticationToken.builder().token(token).refreshToken("")
+        return AuthenticationResponse.builder().token(token)
+                .refreshToken(refreshTokenService.generateRefreshToken().getToken())
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .username(loginRequest.getUsername())
                 .build();
@@ -134,5 +138,16 @@ public class AuthService {
         return userRepository.findByUsername(principal.getUsername())
                 .orElseThrow(() -> new SpringRedditException("Failed to find user " + principal
                         .getUsername()));
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithUsername(refreshTokenRequest.getUsername());
+        return AuthenticationResponse.builder()
+                .token(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+                .username(refreshTokenRequest.getUsername())
+                .build();
     }
 }
