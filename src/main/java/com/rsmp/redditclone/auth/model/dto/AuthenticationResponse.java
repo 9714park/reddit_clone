@@ -11,7 +11,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthenticationToken {
+public class AuthenticationResponse {
     private String token;
     private String refreshToken;
     private Instant expiresAt;
