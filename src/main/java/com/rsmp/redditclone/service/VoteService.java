@@ -33,21 +33,19 @@ public class VoteService {
         // Find previous user vote on the post
         Optional<Vote> voteByPostAndUser = voteRepository
                 .findTopByPostAndUserOrderByVoteIdDesc(post, authService.getCurrentUser());
-
         if (voteByPostAndUser.isPresent() &&
-                !voteByPostAndUser.get().getVoteType().equals(voteDto.getVoteType())) {
-            if (UPVOTE.equals(voteDto.getVoteType())) {
-                post.setVoteCount(post.getVoteCount() + 1);
-            } else {
-                post.setVoteCount(post.getVoteCount() - 1);
-            }
+                voteByPostAndUser.get().getVoteType().equals(voteDto.getVoteType())) {
+            return;
         }
-        // Update vote count on post
-        postRepository.save(post);
 
-        // Save user vote
+        if (UPVOTE.equals(voteDto.getVoteType())) {
+            post.setVoteCount(post.getVoteCount() + 1);
+        } else {
+            post.setVoteCount(post.getVoteCount() - 1);
+        }
+
         voteRepository.save(mapToVote(voteDto, post));
-
+        postRepository.save(post);
     }
 
     private Vote mapToVote(VoteDto voteDto, Post post) {
