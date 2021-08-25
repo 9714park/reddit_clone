@@ -43,7 +43,7 @@ public class PostService {
                         + postRequest.getSubredditName()));
 
         postRepository.save(postMapper
-                .mapPostRequestToPost(postRequest, subreddit, authService.getCurrentUser()));
+                .map(postRequest, subreddit, authService.getCurrentUser()));
     }
 
     // Get all posts
@@ -53,7 +53,7 @@ public class PostService {
 
         return postRepository.findAll()
                 .stream()
-                .map(postMapper::mapPostToPostResponse)
+                .map(postMapper::mapToPostResponse)
                 .collect(toList());
     }
 
@@ -65,7 +65,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new SpringRedditException("Failed to find post with id " + id));
 
-        return postMapper.mapPostToPostResponse(post);
+        return postMapper.mapToPostResponse(post);
     }
 
     // Get post by subreddit
@@ -77,7 +77,7 @@ public class PostService {
                 .orElseThrow(() -> new SpringRedditException("Failed to find subreddit with id " + subredditId));
 
         List<Post> posts = postRepository.findAllBySubreddit(subreddit);
-        return posts.stream().map(postMapper::mapPostToPostResponse).collect(toList());
+        return posts.stream().map(postMapper::mapToPostResponse).collect(toList());
     }
 
     // Get post by username
@@ -90,7 +90,7 @@ public class PostService {
 
         return postRepository.findByUser(user)
                 .stream()
-                .map(postMapper::mapPostToPostResponse)
+                .map(postMapper::mapToPostResponse)
                 .collect(toList());
     }
 }

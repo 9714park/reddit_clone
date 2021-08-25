@@ -15,10 +15,10 @@ public interface PostMapper {
     @Mapping(target = "user", source = "user")
     @Mapping(target="createDate", expression = "java(java.time.Instant.now())")
     @Mapping(target = "description", source="postRequest.description")
-    Post mapPostRequestToPost(PostRequest postRequest, Subreddit subreddit, User user);
+    Post map(PostRequest postRequest, Subreddit subreddit, User user);
 
     @Mapping(target = "subredditName", source="subreddit.name")
     @Mapping(target = "username", source="user.username")
-    PostResponse mapPostToPostResponse(Post post);
+    PostResponse mapToPostResponse(Post post);
 
 }

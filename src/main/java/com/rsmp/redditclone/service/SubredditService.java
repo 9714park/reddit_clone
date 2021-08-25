@@ -27,7 +27,7 @@ public class SubredditService {
     public SubredditDto save(SubredditDto subredditDto) {
         log.info("Saving subreddit {}", subredditDto.getName()
         );
-        Subreddit subreddit = subredditMapper.mapDtoToSubreddit(subredditDto);
+        Subreddit subreddit = subredditMapper.map(subredditDto);
 
         Subreddit save = subredditRepository.save(subreddit);
         subredditDto.setId(save.getId());
@@ -41,7 +41,7 @@ public class SubredditService {
 
         return subredditRepository.findAll()
                 .stream()
-                .map(subredditMapper::mapSubredditToDto)
+                .map(subredditMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
@@ -52,6 +52,6 @@ public class SubredditService {
                 .orElseThrow(() -> new SpringRedditException(
                         "Failed to find subreddit with id " + id));
 
-        return subredditMapper.mapSubredditToDto(subreddit);
+        return subredditMapper.mapToDto(subreddit);
     }
 }
