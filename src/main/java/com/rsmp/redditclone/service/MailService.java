@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MailService {
     private final JavaMailSender mailSender;
-    private final MailBuilder mailBuilder;
 
     @Async
     public void sendMail(NotificationEmail notificationEmail) {
@@ -25,7 +24,7 @@ public class MailService {
             messageHelper.setFrom("springreddit@email.com");
             messageHelper.setTo(notificationEmail.getRecipient());
             messageHelper.setSubject(notificationEmail.getSubject());
-            messageHelper.setText(mailBuilder.build(notificationEmail.getBody()));
+            messageHelper.setText(notificationEmail.getBody());
         };
 
         try {
